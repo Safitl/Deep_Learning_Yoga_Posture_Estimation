@@ -15,11 +15,10 @@ This project addresses the yoga posture classification problem by developing an 
 1.  [Core Features](#-core-features)
 2.  [Methodology](#-methodology)
 3.  [Repository Structure](#-repository-structure)
-4.  [Setup and Installation](#-setup-and-installation)
-5.  [How to Run the Code](#-how-to-run-the-code)
-6.  [Model Hyperparameters](#-model-hyperparameters)
-7.  [Final Results](#-final-results)
-8.  [Credits and Attribution](#-credits-and-attribution)
+4.  [How to Run the Code](#-how-to-run-the-code)
+5.  [Model Hyperparameters](#-model-hyperparameters)
+6.  [Final Results](#-final-results)
+7.  [Credits and Attribution](#-credits-and-attribution)
 
 ---
 
@@ -81,3 +80,62 @@ The project is organized with a clear separation between different models and da
         ├── transformer_train_loop.py
         ├── optimize_multi_token_transformer.py
         └── evaluate_best_multi_token_trans.py
+
+---
+
+## 🚀 How to Run the Code
+
+The workflow is divided into data preparation, optimization, and training.
+
+1.  **Data Preparation:** Run the scripts in `src/Data_Processing/` to extract features, merge them, create stratified splits, and clean the final CSV files.
+2.  **Hyperparameter Optimization (Optional):** Run the Optuna scripts (`optimize_*.py`) in the `Transformer` and `Pose_Keypoints` directories to find the best hyperparameters.
+3.  **Train the Final Model:** Run `src/Transformer/train_best_transformer.py` to train the final model using the optimal hyperparameters found.
+
+---
+
+## ⚙️ Model Hyperparameters
+
+The final hyperparameters for each of the three benchmarked models are listed below.
+
+#### 1. Multi-Token Transformer (Our Model)
+
+| Optimizer | Learning Rate | Epochs | Batch Size | Heads | Layers | Embedding Dim | Dropout |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| AdamW | 0.000245 | 15 | 64 | 8 | 2 | 256 | 0.25 |
+
+#### 2. ResNet-18 (CNN-Only Baseline)
+
+| Optimizer | Learning Rate | Epochs | Batch Size | Trainable Params |
+| :--- | :--- | :--- | :--- | :--- |
+| Adam | 5e-4 | 25 | 32 | 24,111 (0.22%) |
+
+#### 3. MLP (Keypoints-Only Baseline)
+
+| Optimizer | Learning Rate | Epochs | Batch Size | Num of Params |
+| :--- | :--- | :--- | :--- | :--- |
+| Adam | 1e-3 | 30 | 32 | 10,543 |
+
+---
+
+## 📊 Final Results
+
+The multimodal Transformer significantly outperformed both single-modality baselines on the test set.
+
+| Model | Test Accuracy | Test F1-Score (Macro) | Test mAP |
+| :--- | :--- | :--- | :--- |
+| MLP (Keypoints-Only) | 66.80% | 0.668 | 0.707 |
+| ResNet-18 (CNN-Only) | 64.80% | 0.648 | 0.681 |
+| **Multi-Token Transformer (Fused)** | **73.05%** | **0.758** | **0.789** |
+
+The analysis showed that classes with very few training images (e.g., classes 2, 6, 8, 23) performed poorly across all models. Additionally, some visually similar poses, like Class 27 (Pincha Mayurasana) and Class 1 (Adho Mukha Vrksasana), were frequently confused.
+
+---
+
+## 📜 Credits and Attribution
+
+This project builds upon the foundational work of many researchers and the open-source community.
+
+* **Frameworks:** PyTorch, Optuna
+* **Models & Architectures:** YOLOv11-Pose, ResNet ("Deep Residual Learning for Image Recognition"), Transformers ("Attention Is All You Need")
+* **Dataset:** Kaggle Yoga Posture Dataset
+* **Inspiration:** Yoga-82 Dataset Paper ("Yoga-82: A New Dataset for Fine-grained Classification of Human Poses")
