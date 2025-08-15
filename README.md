@@ -8,6 +8,9 @@
 
 This project addresses the yoga posture classification problem by developing an automated system that can identify a pose from a single image. We implement a multimodal pipeline that fuses a **ResNet-18** image-encoded vector with a **YOLOv11-Pose** keypoint vector, feeding them into a lightweight **Multi-Token Transformer**. Our approach, tested on a dataset of 2,800 images across 47 classes, achieves a **+6%** increase in Top-1 accuracy over the best single-modality baseline, demonstrating the effectiveness of feature fusion.
 
+
+![Alt text for the GIF](./assets/yoga_gif.gif)
+
 ---
 
 ## 📋 Table of Contents
@@ -44,6 +47,8 @@ The classification pipeline is designed to leverage the complementary strengths 
     * *CLS Token:* A special, learnable [CLS] token is prepended to the sequence, resulting in a total of 19 tokens. This token acts as a global summary of the entire input.
     * *Encoding:* Positional embeddings are added to the sequence, which is then fed into a *2-layer Transformer Encoder* with 8 attention heads. This allows the model to learn the relationships between all feature tokens.
     * *Classification:* The final output embedding of the [CLS] token is passed through a LayerNorm and a final linear layer to predict one of the 47 yoga pose classes.
+
+ ![My model architecture diagram](./assets/Model's_diagram.png)
 ---
 ## 📂 Repository Structure
 
@@ -60,7 +65,7 @@ The project is organized with a clear separation between different models and da
        ├── train_set_half_fine_tune_kp_conf.csv
        ├── val_set_half_fine_tune_kp_conf.csv
        └── test_set_half_fine_tune_kp_conf.csv
-└── src/
+├── src/
     ├── ResNet18_classifier/
     │   └── resnet18_fine_tuned_embbeding_extractor.py
     │   └── resnet_fine_tuning_process.py
@@ -80,52 +85,77 @@ The project is organized with a clear separation between different models and da
         ├── transformer_train_loop.py
         ├── optimize_multi_token_transformer.py
         └── evaluate_best_multi_token_trans.py
-
+└── Results/
+        ├── best_weights_multi_token.pth
+        ├── multi-token-transformer-hpo.db
+        ├── best_hyperparameters_multi_token.json
+        ├── best_trial_history_multi_token.json
+        └── model_summary.txt
+```
 ---
 
 ## 🚀 How to Run the Code
 
-The workflow is divided into data preparation, optimization, and training.
+The workflow is divided into optional feature extraction, data preparation, optimization, and training.
 
-1.  **Data Preparation:** Run the scripts in `src/Data_Processing/` to extract features, merge them, create stratified splits, and clean the final CSV files.
-2.  **Hyperparameter Optimization (Optional):** Run the Optuna scripts (`optimize_*.py`) in the `Transformer` and `Pose_Keypoints` directories to find the best hyperparameters.
-3.  **Train the Final Model:** Run `src/Transformer/train_best_transformer.py` to train the final model using the optimal hyperparameters found.
+1. *(Optional) Feature Extraction – CNN embeddings*
+   - *Fine-tune ResNet-18* on your yoga images and save the weights.
+   - *Export embeddings CSV* for all images using the fine-tuned model (512-dim vectors per image).
+   - Expected output: resnet18_embeddings.csv (one row per image, includes an image_path/label column and a 512-D feature vector).
+   - Scripts: resnet18_fine_tuned_embbeding_extractor.py, resnet18_embedding_extractor.py  
+     (Adjust paths/args inside the scripts as needed.)
 
+2. *(Optional) Feature Extraction – Keypoints*
+   - *Run the YOLO pose labeler* to detect 17 keypoints per image and export a CSV.
+   - Expected output: yolo_keypoints_dataset.csv (per image: 17×(x, y, conf) → 51 features + identifiers/labels).
+   - Tool/Script: YOLOv11 Pose + your label/export script.
+
+3. *Data Preparation*
+   - Use the scripts in src/Data_Processing/ to:
+     - merge features (e.g., keypoints + CNN embeddings),
+     - create stratified train/val/test splits,
+     - and write the cleaned CSVs.
+   - Typical outputs: train_set.csv, val_set.csv, test_set.csv (and any intermediate merged files like combo_features.csv).
+
+4. *Hyperparameter Optimization (Optional)*
+   - Run the Optuna scripts (optimize_*.py) in the Transformer directory to search for the best hyperparameters.
+
+5. *Train the Final Model*
+   - Run src/Transformer/train_best_transformer.py to train using the selected hyperparameters.
 ---
 
-## ⚙️ Model Hyperparameters
+## ⚙ Model Hyperparameters
 
-The final hyperparameters for each of the three benchmarked models are listed below.
-
-#### 1. Multi-Token Transformer (Our Model)
+### 1) Multi-Token Transformer (Our Model)
 
 | Optimizer | Learning Rate | Epochs | Batch Size | Heads | Layers | Embedding Dim | Dropout |
-| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| AdamW | 0.000245 | 15 | 64 | 8 | 2 | 256 | 0.25 |
+|:---------:|:-------------:|:------:|:----------:|:-----:|:------:|:-------------:|:-------:|
+| AdamW     | 2.45e-4       | 15     | 64         | 8     | 2      | 256           | 0.25    |
 
-#### 2. ResNet-18 (CNN-Only Baseline)
+### 2) ResNet-18 (CNN-Only Baseline)
 
-| Optimizer | Learning Rate | Epochs | Batch Size | Trainable Params |
-| :--- | :--- | :--- | :--- | :--- |
-| Adam | 5e-4 | 25 | 32 | 24,111 (0.22%) |
+| Optimizer | Learning Rate | Epochs | Batch Size | Trainable Params* |
+|:---------:|:-------------:|:------:|:----------:|:-----------------:|
+| Adam      | 5e-4          | 25     | 32         | 24,111 (≈0.22%)   |
 
-#### 3. MLP (Keypoints-Only Baseline)
+\* Training last FC layer only (≈24k of ~11.7M total).
+
+### 3) MLP (Keypoints-Only Baseline)
 
 | Optimizer | Learning Rate | Epochs | Batch Size | Num of Params |
-| :--- | :--- | :--- | :--- | :--- |
-| Adam | 1e-3 | 30 | 32 | 10,543 |
+|:---------:|:-------------:|:------:|:----------:|:-------------:|
+| Adam      | 1e-3          | 30     | 32         | 10,543        |
 
 ---
 
 ## 📊 Final Results
 
-The multimodal Transformer significantly outperformed both single-modality baselines on the test set.
+| Model                          | Test Accuracy | Test F1 (Macro) | Test mAP |
+|:-------------------------------|:-------------:|:---------------:|:--------:|
+| MLP (Keypoints-Only)           | 66.80%        | 0.668           | 0.707    |
+| ResNet-18 (CNN-Only)           | 64.80%        | 0.648           | 0.681    |
+| *Multi-Token Transformer*    | *73.05%*    | *0.758*       | *0.789* |
 
-| Model | Test Accuracy | Test F1-Score (Macro) | Test mAP |
-| :--- | :--- | :--- | :--- |
-| MLP (Keypoints-Only) | 66.80% | 0.668 | 0.707 |
-| ResNet-18 (CNN-Only) | 64.80% | 0.648 | 0.681 |
-| **Multi-Token Transformer (Fused)** | **73.05%** | **0.758** | **0.789** |
 
 The analysis showed that classes with very few training images (e.g., classes 2, 6, 8, 23) performed poorly across all models. Additionally, some visually similar poses, like Class 27 (Pincha Mayurasana) and Class 1 (Adho Mukha Vrksasana), were frequently confused.
 
