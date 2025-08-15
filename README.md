@@ -8,9 +8,9 @@
 
 This project addresses the yoga posture classification problem by developing an automated system that can identify a pose from a single image. We implement a multimodal pipeline that fuses a **ResNet-18** image-encoded vector with a **YOLOv11-Pose** keypoint vector, feeding them into a lightweight **Multi-Token Transformer**. Our approach, tested on a dataset of 2,800 images across 47 classes, achieves a **+6%** increase in Top-1 accuracy over the best single-modality baseline, demonstrating the effectiveness of feature fusion.
 
-
-![Alt text for the GIF](./assets/yoga_gif.gif)
-
+<div align="center">
+  <img src="./assets/yoga_gif.gif" alt="YOGA GIF" width="300">
+</div>
 ---
 
 ## 📋 Table of Contents
@@ -48,7 +48,6 @@ The classification pipeline is designed to leverage the complementary strengths 
     * *Encoding:* Positional embeddings are added to the sequence, which is then fed into a *2-layer Transformer Encoder* with 8 attention heads. This allows the model to learn the relationships between all feature tokens.
     * *Classification:* The final output embedding of the [CLS] token is passed through a LayerNorm and a final linear layer to predict one of the 47 yoga pose classes.
 
- ![My model architecture diagram](./assets/Model's_diagram.png)
 ---
 ## 📂 Repository Structure
 
