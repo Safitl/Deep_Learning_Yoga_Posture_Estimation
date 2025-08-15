@@ -1,0 +1,121 @@
+================================================================================
+             Model Summary using `torchinfo`
+================================================================================
+
+=================================================================================================================================================
+Layer (type:depth-idx)                        Input Shape               Output Shape              Param #                   Mult-Adds
+=================================================================================================================================================
+MultiTokenTransformer                         [1, 51]                   [1, 47]                   5,120                     --
+├─ModuleList: 1-1                             --                        --                        --                        --
+│    └─Linear: 2-1                            [1, 3]                    [1, 256]                  1,024                     1,024
+│    └─Linear: 2-2                            [1, 3]                    [1, 256]                  1,024                     1,024
+│    └─Linear: 2-3                            [1, 3]                    [1, 256]                  1,024                     1,024
+│    └─Linear: 2-4                            [1, 3]                    [1, 256]                  1,024                     1,024
+│    └─Linear: 2-5                            [1, 3]                    [1, 256]                  1,024                     1,024
+│    └─Linear: 2-6                            [1, 3]                    [1, 256]                  1,024                     1,024
+│    └─Linear: 2-7                            [1, 3]                    [1, 256]                  1,024                     1,024
+│    └─Linear: 2-8                            [1, 3]                    [1, 256]                  1,024                     1,024
+│    └─Linear: 2-9                            [1, 3]                    [1, 256]                  1,024                     1,024
+│    └─Linear: 2-10                           [1, 3]                    [1, 256]                  1,024                     1,024
+│    └─Linear: 2-11                           [1, 3]                    [1, 256]                  1,024                     1,024
+│    └─Linear: 2-12                           [1, 3]                    [1, 256]                  1,024                     1,024
+│    └─Linear: 2-13                           [1, 3]                    [1, 256]                  1,024                     1,024
+│    └─Linear: 2-14                           [1, 3]                    [1, 256]                  1,024                     1,024
+│    └─Linear: 2-15                           [1, 3]                    [1, 256]                  1,024                     1,024
+│    └─Linear: 2-16                           [1, 3]                    [1, 256]                  1,024                     1,024
+│    └─Linear: 2-17                           [1, 3]                    [1, 256]                  1,024                     1,024
+├─ModuleList: 1-2                             --                        --                        --                        --
+│    └─Linear: 2-18                           [1, 512]                  [1, 256]                  131,328                   131,328
+├─TransformerEncoder: 1-3                     [1, 19, 256]              [1, 19, 256]              --                        --
+│    └─ModuleList: 2-19                       --                        --                        --                        --
+│    │    └─TransformerEncoderLayer: 3-1      [1, 19, 256]              [1, 19, 256]              789,760                   526,592
+│    │    └─TransformerEncoderLayer: 3-2      [1, 19, 256]              [1, 19, 256]              789,760                   526,592
+├─Sequential: 1-4                             [1, 256]                  [1, 47]                   --                        --
+│    └─LayerNorm: 2-20                        [1, 256]                  [1, 256]                  512                       512
+│    └─Linear: 2-21                           [1, 256]                  [1, 47]                   12,079                    12,079
+=================================================================================================================================================
+Total params: 1,745,967
+Trainable params: 1,745,967
+Non-trainable params: 0
+Total mult-adds (M): 1.21
+=================================================================================================================================================
+Input size (MB): 0.00
+Forward/backward pass size (MB): 0.58
+Params size (MB): 4.86
+Estimated Total Size (MB): 5.44
+=================================================================================================================================================
+
+================================================================================
+                Manual Parameter Calculation
+================================================================================
+Layer Name                                                        Parameters
+--------------------------------------------------------------------------------
+cls                                                                      256
+positional_encoding                                                    4,864
+kp_proj.0.weight                                                         768
+kp_proj.0.bias                                                           256
+kp_proj.1.weight                                                         768
+kp_proj.1.bias                                                           256
+kp_proj.2.weight                                                         768
+kp_proj.2.bias                                                           256
+kp_proj.3.weight                                                         768
+kp_proj.3.bias                                                           256
+kp_proj.4.weight                                                         768
+kp_proj.4.bias                                                           256
+kp_proj.5.weight                                                         768
+kp_proj.5.bias                                                           256
+kp_proj.6.weight                                                         768
+kp_proj.6.bias                                                           256
+kp_proj.7.weight                                                         768
+kp_proj.7.bias                                                           256
+kp_proj.8.weight                                                         768
+kp_proj.8.bias                                                           256
+kp_proj.9.weight                                                         768
+kp_proj.9.bias                                                           256
+kp_proj.10.weight                                                        768
+kp_proj.10.bias                                                          256
+kp_proj.11.weight                                                        768
+kp_proj.11.bias                                                          256
+kp_proj.12.weight                                                        768
+kp_proj.12.bias                                                          256
+kp_proj.13.weight                                                        768
+kp_proj.13.bias                                                          256
+kp_proj.14.weight                                                        768
+kp_proj.14.bias                                                          256
+kp_proj.15.weight                                                        768
+kp_proj.15.bias                                                          256
+kp_proj.16.weight                                                        768
+kp_proj.16.bias                                                          256
+cnn_proj.0.weight                                                    131,072
+cnn_proj.0.bias                                                          256
+encoder.layers.0.self_attn.in_proj_weight                            196,608
+encoder.layers.0.self_attn.in_proj_bias                                  768
+encoder.layers.0.self_attn.out_proj.weight                            65,536
+encoder.layers.0.self_attn.out_proj.bias                                 256
+encoder.layers.0.linear1.weight                                      262,144
+encoder.layers.0.linear1.bias                                          1,024
+encoder.layers.0.linear2.weight                                      262,144
+encoder.layers.0.linear2.bias                                            256
+encoder.layers.0.norm1.weight                                            256
+encoder.layers.0.norm1.bias                                              256
+encoder.layers.0.norm2.weight                                            256
+encoder.layers.0.norm2.bias                                              256
+encoder.layers.1.self_attn.in_proj_weight                            196,608
+encoder.layers.1.self_attn.in_proj_bias                                  768
+encoder.layers.1.self_attn.out_proj.weight                            65,536
+encoder.layers.1.self_attn.out_proj.bias                                 256
+encoder.layers.1.linear1.weight                                      262,144
+encoder.layers.1.linear1.bias                                          1,024
+encoder.layers.1.linear2.weight                                      262,144
+encoder.layers.1.linear2.bias                                            256
+encoder.layers.1.norm1.weight                                            256
+encoder.layers.1.norm1.bias                                              256
+encoder.layers.1.norm2.weight                                            256
+encoder.layers.1.norm2.bias                                              256
+head.0.weight                                                            256
+head.0.bias                                                              256
+head.1.weight                                                         12,032
+head.1.bias                                                               47
+--------------------------------------------------------------------------------
+Total Trainable Parameters                                         1,745,967
+================================================================================

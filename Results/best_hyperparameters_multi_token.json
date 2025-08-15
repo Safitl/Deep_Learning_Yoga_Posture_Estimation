@@ -1,0 +1,10 @@
+{
+  "d_model": 256,
+  "nhead": 8,
+  "n_layers": 2,
+  "dim_ff_multiplier": 4,
+  "dropout": 0.25,
+  "lr": 0.0002453480159918335,
+  "weight_decay": 0.0005265761277157427,
+  "batch_size": 64
+}
